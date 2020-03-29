@@ -82,4 +82,7 @@ pip install -r requirements.txt
 ### Web App
 
 ### MOngoDB database
-Database available at [this link](https://account.mongodb.com/account/login).
+Covics-19 database available in [MongoAtlas](https://account.mongodb.com/account/login).
+
+Database name is `covics-19` and data from [Hopkins data](https://covid19api.com/#details) are stored in the collection
+called `hopkins` in the format originally provided.
