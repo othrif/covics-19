@@ -46,3 +46,40 @@ Our Web App:
 ## What's next for covics-19
 If successful, our project could be moved a step further and be integrated in already existing dashboards used by 
 governments' healthcare systems.
+
+## Setting up this Project
+
+### Python Model
+
+#### Create Conda environment
+In order to use Python environment used for this project in your local machine, please set it up in this way:
+
+Install [Anaconda](https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html) following the
+instructions of the link. Install Anaconda for Python 3.7 version.
+
+Create a conda environment called `covics-19` with following command:
+```
+conda create -n covics-19 python=3.7 pip
+```
+
+To activate this environment, use:
+```
+conda activate covics-19
+```
+
+To deactivate an active environment, use:
+```
+conda activate covics-19
+```
+
+In order to install Python dependencies in this environment, first activate the environment, then install 
+`requirements.txt` using pip:
+```
+conda activate covics-19
+pip install -r requirements.txt
+```
+
+### Web App
+
+### MOngoDB database
+Database available at [this link](https://account.mongodb.com/account/login).
