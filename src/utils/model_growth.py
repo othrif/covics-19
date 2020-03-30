@@ -8,6 +8,7 @@ from scipy.optimize import curve_fit
 from datetime import datetime
 
 import fetch_hopkins
+import populate_results
 
 
 def get_country_code():
@@ -268,4 +269,5 @@ if __name__ == "__main__":
     days = 21 # 3 weeks prediction
     results = main(days)
     print(results)
+    populate_results.populate_with_predicted_cases(results)
 
