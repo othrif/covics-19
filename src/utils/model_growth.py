@@ -164,16 +164,14 @@ def main(days):
     # load data
     covid_confirmed, covid_deaths, covid_recovered = load_data()
 
-    cases = covid_confirmed.iloc[:,[1,-1]].groupby('Country/Region').sum()
-    mostrecentdate = cases.columns[0]
-    cases = cases.sort_values(by = mostrecentdate, ascending = False)
-    cases = cases[cases[mostrecentdate] >= 100]
-
-    topcountries = cases.index
-
-    countries = ['Italy','US','Switzerland','Iran','United Kingdom','Germany','Spain']
-
     dataframe = covid_confirmed
+    dates = dataframe.keys()
+    mostrecentdate = dates[-1]
+
+    cases = dataframe.iloc[:,[1,-1]].groupby('Country/Region').sum().sort_values(by = mostrecentdate, ascending = False)
+    topcountries = cases[cases[mostrecentdate] >= 100].index
+    # countries = ['Italy','US','Switzerland','Iran','United Kingdom','Germany','Spain']
+
     column = "Country/Region"
 
 
