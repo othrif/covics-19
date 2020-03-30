@@ -207,6 +207,8 @@ def main(days):
             resources_capacity_dict[row[0]] = row[1]
     print(resources_capacity_dict)
 
+    f = open("../distribution/fake_demands.csv", "w")
+    f.write("base_country,demand\n")
     for c in topcountries[:]:
         # run
         print(f'Country: {c}')
@@ -262,6 +264,8 @@ def main(days):
 
         # append to master dict
         results['results'].append(results_dict)
+        res_needed = resources_capacity-(confirmed_prediction_3w-deaths_prediction_3w-recovered_prediction_3w)/2
+        f.write(country_code+","+str(res_needed)+"\n")
 
     return results
 
@@ -271,4 +275,6 @@ if __name__ == "__main__":
     results = main(days)
     print(results)
     populate_results.populate_with_predicted_cases(results)
+
+
 
