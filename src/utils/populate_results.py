@@ -49,3 +49,17 @@ def populate_with_predicted_cases(predictions_dict):
     predictions_col = db["predictions"]
     result = predictions_col.insert_one(predictions_dict)
     return result
+
+def populate_with_distributions(distributions_dict):
+    '''
+    This function uploads predictions per country to MongoDB
+    :param predictions_dict: dictionary of predictions per country
+    :return: An instance of InsertOneResult.
+    '''
+    username = urllib.parse.quote_plus("covics-19")
+    password = urllib.parse.quote_plus("Coron@V!rus2020")
+    client = MongoClient("mongodb+srv://" + username + ":" + password + "@cluster0-pjnfk.mongodb.net/test?retryWrites=true&w=majority")
+    db = client['covics-19']
+    distributions_col = db["distributions"]
+    result = distributions_col.insert_one(distributions_dict)
+    return result
