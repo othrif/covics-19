@@ -81,8 +81,14 @@ pip install -r requirements.txt
 
 ### Web App
 
-### MOngoDB database
+### MongoDB database
 Covics-19 database available in [MongoAtlas](https://account.mongodb.com/account/login).
 
 Database name is `covics-19` and data from [Hopkins data](https://covid19api.com/#details) are stored in the collection
 called `hopkins` in the format originally provided.
+
+## Modus Operandis
+Different tools have used for this project:
+* Our [Trello Kanban board](https://trello.com/b/fQuiHhOc/coronalogistic) to track tasks progress
+* Our [technical design description](https://docs.google.com/document/d/1FqhjEneccl5-99yW-r4b4qy9Sq-RtJK6f92knWpxSAE/edit)
+* Our [Slack](https://slack.com/) workspace `covics-19_team` which we integrated with our GitHub repos
