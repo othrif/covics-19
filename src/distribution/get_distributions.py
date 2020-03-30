@@ -35,11 +35,12 @@ def country_preferred_transaction(subgraph, country, selling_nodes):
     return sorted(edges_of_interest, key= lambda x: x[2])[0]
 
 
-def find_next_transaction(requirements_dict, graph):
+def find_next_transaction(requirements_dict, graph, recognised_countries):
     '''
     Find the optimal next transaction to make, from remaining active nodes. 
     '''
-    
+    unrecognised_countries = 0
+
     # Filter the graph to the transacting nodes
     active_nodes = list(requirements_dict.keys())
     subgraph = graph.subgraph(active_nodes)
@@ -47,15 +48,20 @@ def find_next_transaction(requirements_dict, graph):
     # Split the transacting nodes into buyers and sellers
     buying_nodes = [country for country, capacity in requirements_dict.items() if capacity < 0]
     selling_nodes = [country for country, capacity in requirements_dict.items() if capacity > 0]
-    
     # Find the cheapest transaction for each country
     country_preferred_transactions = []
     for country in buying_nodes:
-        country_preferred_transactions.append(country_preferred_transaction(subgraph, country, selling_nodes))
-    
+        if country in recognised_countries:
+            country_preferred_transactions.append(country_preferred_transaction(subgraph, country, selling_nodes))
+        else:
+            unrecognised_countries+=1
+
     # Find the cheapest transaction overall
-    preferred_transactions_sorted = sorted(country_preferred_transactions, key= lambda x: x[2])
-    
+    if country_preferred_transactions:
+        preferred_transactions_sorted = sorted(country_preferred_transactions, key= lambda x: x[2])
+    # If no country left in the buying list is recognised, trigger ending the distribution optimisation
+    elif len(buying_nodes)==unrecognised_countries:
+        return False
     # Take all transactions at the lowest cost
     min_cost = preferred_transactions_sorted[0][2]
     lowest_cost_transactions = [transaction for transaction in preferred_transactions_sorted if transaction[2]==min_cost]
@@ -110,7 +116,8 @@ def find_optimal_transactions(costs_df_location, requirements_df_location):
     '''
     transactions = []
     
-    costs = pd.read_csv(costs_df_location)
+    costs = pd.read_csv(costs_df_location, keep_default_na=False)
+    recognised_countries = costs['base_country'].unique()
     requirements = pd.read_csv(requirements_df_location)
     
     requirements_dictionary = {}
@@ -130,11 +137,13 @@ def find_optimal_transactions(costs_df_location, requirements_df_location):
     # While there are positive and negative numbers in the requirements_dictionary...
     while ((any(capacity > 0 for capacity in requirements_dictionary.values())) and
            (any(capacity < 0 for capacity in requirements_dictionary.values()))):
-        selected_transaction = find_next_transaction(requirements_dictionary, G)
+        selected_transaction = find_next_transaction(requirements_dictionary, G, recognised_countries)
+        if selected_transaction == False:
+            break
         selected_transaction['transfer_amount'] = min(abs(selected_transaction['required_value']), selected_transaction['incoming_value'])
         
         update_requirements_dictionary(selected_transaction, requirements_dictionary)
-        
+
         del selected_transaction['required_value']
         del selected_transaction['incoming_value']
             
@@ -143,9 +152,10 @@ def find_optimal_transactions(costs_df_location, requirements_df_location):
     return transactions
 
 
-
 transactions = find_optimal_transactions('country_distances.csv', 'fake_demands.csv')
 now = datetime.now()
 distributions = {"timestamp": now, "distributions": transactions}
 result = populate_results.populate_with_distributions(distributions)
-print(result)
+
+# print(result)
+# print(transactions)
