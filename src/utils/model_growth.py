@@ -207,7 +207,7 @@ def main(days):
             resources_capacity_dict[row[0]] = row[1]
     print(resources_capacity_dict)
 
-    for c in topcountries[:5]:
+    for c in topcountries[:]:
         # run
         print(f'Country: {c}')
         dbltime,dbltimeerr,recentdbltime,params,pred = plotCasesandPredict(dataframe,column,c,days, mostrecentdate)
