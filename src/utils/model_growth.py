@@ -5,11 +5,16 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 from datetime import datetime
 
+
+def get_country_code():
+    countries = { 'Diamond Princess':'DP', 'Aruba':'AW',  'Afghanistan':'AF',  'Angola':'AO',  'Anguilla':'AI',  'Åland Islands':'AX',  'Albania':'AL',  'Andorra':'AD',  'United Arab Emirates':'AE',  'Argentina':'AR',  'Armenia':'AM',  'American Samoa':'AS',  'Antarctica':'AQ',  'French Southern Territories':'TF',  'Antigua and Barbuda':'AG',  'Australia':'AU',  'Austria':'AT',  'Azerbaijan':'AZ',  'Burundi':'BI',  'Belgium':'BE',  'Benin':'BJ',  'Bonaire, Sint Eustatius and Saba':'BQ',  'Burkina Faso':'BF',  'Bangladesh':'BD',  'Bulgaria':'BG',  'Bahrain':'BH',  'Bahamas':'BS',  'Bosnia and Herzegovina':'BA',  'Saint Barthélemy':'BL',  'Belarus':'BY',  'Belize':'BZ',  'Bermuda':'BM',  'Bolivia, Plurinational State of':'BO',  'Brazil':'BR',  'Barbados':'BB',  'Brunei Darussalam':'BN',  'Bhutan':'BT',  'Bouvet Island':'BV',  'Botswana':'BW',  'Central African Republic':'CF',  'Canada':'CA',  'Cocos (Keeling) Islands':'CC',  'Switzerland':'CH',  'Chile':'CL',  'China':'CN',  'Côte d\'Ivoire':'CI',  'Cameroon':'CM',  'Congo, The Democratic Republic of the':'CD',  'Congo':'CG',  'Cook Islands':'CK',  'Colombia':'CO',  'Comoros':'KM',  'Cabo Verde':'CV',  'Costa Rica':'CR',  'Cuba':'CU',  'Curaçao':'CW',  'Christmas Island':'CX',  'Cayman Islands':'KY',  'Cyprus':'CY',  'Czechia':'CZ',  'Germany':'DE',  'Djibouti':'DJ',  'Dominica':'DM',  'Denmark':'DK',  'Dominican Republic':'DO',  'Algeria':'DZ',  'Ecuador':'EC',  'Egypt':'EG',  'Eritrea':'ER',  'Western Sahara':'EH',  'Spain':'ES',  'Estonia':'EE',  'Ethiopia':'ET',  'Finland':'FI',  'Fiji':'FJ',  'Falkland Islands (Malvinas)':'FK',  'France':'FR',  'Faroe Islands':'FO',  'Micronesia, Federated States of':'FM',  'Gabon':'GA',  'United Kingdom':'GB',  'Georgia':'GE',  'Guernsey':'GG',  'Ghana':'GH',  'Gibraltar':'GI',  'Guinea':'GN',  'Guadeloupe':'GP',  'Gambia':'GM',  'Guinea-Bissau':'GW',  'Equatorial Guinea':'GQ',  'Greece':'GR',  'Grenada':'GD',  'Greenland':'GL',  'Guatemala':'GT',  'French Guiana':'GF',  'Guam':'GU',  'Guyana':'GY',  'Hong Kong':'HK',  'Heard Island and McDonald Islands':'HM',  'Honduras':'HN',  'Croatia':'HR',  'Haiti':'HT',  'Hungary':'HU',  'Indonesia':'ID',  'Isle of Man':'IM',  'India':'IN',  'British Indian Ocean Territory':'IO',  'Ireland':'IE',  'Iran':'IR',  'Iraq':'IQ',  'Iceland':'IS',  'Israel':'IL',  'Italy':'IT',  'Jamaica':'JM',  'Jersey':'JE',  'Jordan':'JO',  'Japan':'JP',  'Kazakhstan':'KZ',  'Kenya':'KE',  'Kyrgyzstan':'KG',  'Cambodia':'KH',  'Kiribati':'KI',  'Saint Kitts and Nevis':'KN',  'Korea, South':'KR', 'Korea, Republic of':'KR',  'Kuwait':'KW',  'Lao People\'s Democratic Republic':'LA',  'Lebanon':'LB',  'Liberia':'LR',  'Libya':'LY',  'Saint Lucia':'LC',  'Liechtenstein':'LI',  'Sri Lanka':'LK',  'Lesotho':'LS',  'Lithuania':'LT',  'Luxembourg':'LU',  'Latvia':'LV',  'Macao':'MO',  'Saint Martin (French part)':'MF',  'Morocco':'MA',  'Monaco':'MC',  'Moldova':'MD',  'Madagascar':'MG',  'Maldives':'MV',  'Mexico':'MX',  'Marshall Islands':'MH',  'North Macedonia':'MK',  'Mali':'ML',  'Malta':'MT',  'Myanmar':'MM',  'Montenegro':'ME',  'Mongolia':'MN',  'Northern Mariana Islands':'MP',  'Mozambique':'MZ',  'Mauritania':'MR',  'Montserrat':'MS',  'Martinique':'MQ',  'Mauritius':'MU',  'Malawi':'MW',  'Malaysia':'MY',  'Mayotte':'YT',  'Namibia':'NA',  'New Caledonia':'NC',  'Niger':'NE',  'Norfolk Island':'NF',  'Nigeria':'NG',  'Nicaragua':'NI',  'Niue':'NU',  'Netherlands':'NL',  'Norway':'NO',  'Nepal':'NP',  'Nauru':'NR',  'New Zealand':'NZ',  'Oman':'OM',  'Pakistan':'PK',  'Panama':'PA',  'Pitcairn':'PN',  'Peru':'PE',  'Philippines':'PH',  'Palau':'PW',  'Papua New Guinea':'PG',  'Poland':'PL',  'Puerto Rico':'PR',  'Korea, Democratic People\'s Republic of':'KP',  'Portugal':'PT',  'Paraguay':'PY',  'Palestine, State of':'PS',  'French Polynesia':'PF',  'Qatar':'QA',  'Réunion':'RE',  'Romania':'RO',  'Russia':'RU',  'Rwanda':'RW',  'Saudi Arabia':'SA',  'Sudan':'SD',  'Senegal':'SN',  'Singapore':'SG',  'South Georgia and the South Sandwich Islands':'GS',  'Saint Helena, Ascension and Tristan da Cunha':'SH',  'Svalbard and Jan Mayen':'SJ',  'Solomon Islands':'SB',  'Sierra Leone':'SL',  'El Salvador':'SV',  'San Marino':'SM',  'Somalia':'SO',  'Saint Pierre and Miquelon':'PM',  'Serbia':'RS',  'South Sudan':'SS',  'Sao Tome and Principe':'ST',  'Suriname':'SR',  'Slovakia':'SK',  'Slovenia':'SI',  'Sweden':'SE',  'Eswatini':'SZ',  'Sint Maarten (Dutch part)':'SX',  'Seychelles':'SC',  'Syrian Arab Republic':'SY',  'Turks and Caicos Islands':'TC',  'Chad':'TD',  'Togo':'TG',  'Thailand':'TH',  'Tajikistan':'TJ',  'Tokelau':'TK',  'Turkmenistan':'TM',  'Timor-Leste':'TL',  'Tonga':'TO',  'Trinidad and Tobago':'TT',  'Tunisia':'TN',  'Turkey':'TR',  'Tuvalu':'TV',  'Taiwan*':'TW',  'Tanzania, United Republic of':'TZ',  'Uganda':'UG',  'Ukraine':'UA',  'United States Minor Outlying Islands':'UM',  'Uruguay':'UY',  'United States':'US',  'Uzbekistan':'UZ',  'Holy See (Vatican City State)':'VA',  'Saint Vincent and the Grenadines':'VC',  'Venezuela, Bolivarian Republic of':'VE',  'Virgin Islands, British':'VG',  'Virgin Islands, U.S.':'VI',  'VietNam':'VN',  'Vanuatu':'VU',  'Wallis and Futuna':'WF',  'Samoa':'WS',  'Yemen':'YE',  'South Africa':'ZA',  'Zambia':'ZM',  'Zimbabwe':'ZW'}
+    return countries
+
 def load_data():
-    data_dir = "../../../COVID-19/csse_covid_19_data/"
-    covid_confirmed = pd.read_csv(data_dir+'csse_covid_19_time_series/time_series_covid19_confirmed_global.csv')
-    covid_deaths = pd.read_csv(data_dir+'csse_covid_19_time_series/time_series_covid19_deaths_global.csv')
-    covid_recovered = pd.read_csv(data_dir+'csse_covid_19_time_series/time_series_covid19_recovered_global.csv')
+    data_dir = "../../data/external/"
+    covid_confirmed = pd.read_csv(data_dir+'time_series_covid19_confirmed_global.csv')
+    covid_deaths = pd.read_csv(data_dir+'time_series_covid19_deaths_global.csv')
+    covid_recovered = pd.read_csv(data_dir+'time_series_covid19_recovered_global.csv')
 
     return covid_confirmed, covid_deaths, covid_recovered
 
@@ -163,6 +168,7 @@ def main(days):
 
     # load data
     covid_confirmed, covid_deaths, covid_recovered = load_data()
+    country_code_dict = get_country_code()
 
     dataframe = covid_confirmed
     dates = dataframe.keys()
@@ -170,33 +176,63 @@ def main(days):
 
     cases = dataframe.iloc[:,[1,-1]].groupby('Country/Region').sum().sort_values(by = mostrecentdate, ascending = False)
     topcountries = cases[cases[mostrecentdate] >= 100].index
-    # countries = ['Italy','US','Switzerland','Iran','United Kingdom','Germany','Spain']
+    # topcountries = ['Italy','US','Switzerland','Iran','United Kingdom','Germany','Spain']
 
+    #print('================')
+    #topcountries = ['Cambodia']
+    #print(dataframe[covid_confirmed['Country/Region']=='Cambodia'])
+    #print(dataframe[covid_deaths['Country/Region']=='Cambodia'])
+    #print(dataframe[covid_recovered['Country/Region']=='Cambodia'])
+    #print('================')
     column = "Country/Region"
-
 
     timestamp = datetime.now()
 
     results = {"results":[],"timestamp":timestamp}
     results_keys = ['country_code','country_name','resources_capacity','confirmed','deaths','recovered','confirmed_prediction_3w','deaths_prediction_3w','recovered_prediction_3w']
 
-    for c in topcountries[:5]:
+    for c in topcountries:
+        #if (c == 'Cambodia'):
+        #    continue
         # run
+        print(f'Country: {c}')
         dbltime,dbltimeerr,recentdbltime,params,pred = plotCasesandPredict(dataframe,column,c,days, mostrecentdate)
 
         # initialise dict of results
         results_dict = dict.fromkeys(results_keys)
 
         # generate dict values
-        country_code = "TEST" # add later
+        if c == 'US':
+            country_code = c
+        else:
+            country_code = country_code_dict[c]
+        print("==================")
+        print(c)
+        print()
+        print(c, country_code)
+        print("==================")
+
         country_name = c
         resources_capacity = "TEST" # resources
         confirmed = int(dataframe[dataframe['Country/Region']==c].iloc[:,-1].sum())
-        deaths = int(covid_deaths[covid_deaths['Country/Region']==c].iloc[:,-1].sum())
-        recovered = int(covid_recovered[covid_recovered['Country/Region']==c].iloc[:,-1].sum())
-        confirmed_prediction_3w = int(pred) # we take the prediction
-        deaths_prediction_3w = int(deaths/confirmed * confirmed_prediction_3w) # use current perc deaths
-        recovered_prediction_3w = int(recovered/confirmed * confirmed_prediction_3w) # use current perc recovered
+        if(not covid_deaths.empty):
+            deaths = int(covid_deaths[covid_deaths['Country/Region']==c].iloc[:,-1].sum())
+        else:
+            deaths = 0
+        if(not covid_recovered.empty):
+            recovered = int(covid_recovered[covid_recovered['Country/Region']==c].iloc[:,-1].sum())
+        else:
+            recovered = 0
+        if not np.isnan(pred):
+            confirmed_prediction_3w = int(pred) # we take the prediction
+        else:
+            confirmed_prediction_3w = -1
+        if confirmed != 0:
+            deaths_prediction_3w = int(deaths/confirmed * confirmed_prediction_3w) # use current perc deaths
+            recovered_prediction_3w = int(recovered/confirmed * confirmed_prediction_3w) # use current perc recovered
+        else:
+            deaths_prediction_3w = -1
+            recovered_prediction_3w = -1
 
         # populate dict
         results_dict['country_code'] = country_code
