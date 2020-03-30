@@ -1,12 +1,14 @@
 import os
+import operator
 import numpy as np
 import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 from operator import itemgetter
-import operator
 from datetime import datetime
+
+
 
 def logistic(t, a, b, c, d):
     return c + (d - c)/(1 + a * np.exp(- b * t))
@@ -14,7 +16,7 @@ def logistic(t, a, b, c, d):
 def exponential(t, a, b, c):
     return a * np.exp(b * t) + c
 
-def plotCasesandPredict(dataframe, column, country,days):
+def plotCasesandPredict(dataframe, column, country,days, mostrecentdate):
 
     co = dataframe[dataframe[column] == country].iloc[:,4:].T.sum(axis = 1)
     co = pd.DataFrame(co)
@@ -145,18 +147,27 @@ def plotCasesandPredict(dataframe, column, country,days):
 
     if exponentialworked:
         return [edoubletime, edoubletimeerror, recentdbltime,epopt,round(preds_exp[-1])]
-
     else:
         return [float('NaN'), float('NaN'), recentdbltime,float('NaN'),float('NaN')]
 
 def main():
     print(f'Start modeling COVID-19 cases based on latest data!')
+
     data_dir = "../../../COVID-19/csse_covid_19_data/"
     covid_confirmed = pd.read_csv(data_dir+'csse_covid_19_time_series/time_series_covid19_confirmed_global.csv')
+    covid_deaths = pd.read_csv(data_dir+'csse_covid_19_time_series/time_series_covid19_deaths_global.csv')
+    covid_recovered = pd.read_csv(data_dir+'csse_covid_19_time_series/time_series_covid19_recovered_global.csv')
+
+    cases = covid_confirmed.iloc[:,[1,-1]].groupby('Country/Region').sum()
+    mostrecentdate = cases.columns[0]
+    cases = cases.sort_values(by = mostrecentdate, ascending = False)
+    cases = cases[cases[mostrecentdate] >= 100]
+
     countries = ['Italy','US','Switzerland','Iran','United Kingdom','Germany','Spain']
     dataframe = covid_confirmed
     column = "Country/Region"
     days = 21
+
 
     timestamp = datetime.now()
 
@@ -165,7 +176,7 @@ def main():
 
     for c in countries:
         # run
-        dbltime,dbltimeerr,recentdbltime,params,pred = plotCasesandPredict(dataframe,column,c,days)
+        dbltime,dbltimeerr,recentdbltime,params,pred = plotCasesandPredict(dataframe,column,c,days, mostrecentdate)
 
         # initialise dict of results
         results_dict = dict.fromkeys(results_keys)
@@ -194,6 +205,7 @@ def main():
 
         # append to master dict
         results['results'].append(results_dict)
+        print results
 
 
 if __name__ == "__main__":
