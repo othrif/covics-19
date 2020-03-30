@@ -8,7 +8,6 @@ which countries should make transfers to which.
 '''
 
 import pandas as pd
-import re
 import networkx as nx
 
 
@@ -128,9 +127,15 @@ def find_optimal_transactions(costs_df_location, requirements_df_location):
     while ((any(capacity > 0 for capacity in requirements_dictionary.values())) and
            (any(capacity < 0 for capacity in requirements_dictionary.values()))):
         selected_transaction = find_next_transaction(requirements_dictionary, G)
-        transactions.append(selected_transaction)
+        selected_transaction['transfer_amount'] = min(abs(selected_transaction['required_value']), selected_transaction['incoming_value'])
+        
         update_requirements_dictionary(selected_transaction, requirements_dictionary)
         
+        del selected_transaction['required_value']
+        del selected_transaction['incoming_value']
+            
+        transactions.append(selected_transaction)
+    
     return transactions
 
 
