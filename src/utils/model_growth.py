@@ -194,19 +194,20 @@ def main(days):
     #print('================')
     column = "Country/Region"
 
-    timestamp = datetime.now()
+    timestamp = datetime.now().isoformat()
 
     results = {"results":[],"timestamp":timestamp}
     results_keys = ['country_code','country_name','resources_capacity','confirmed','deaths','recovered','confirmed_prediction_3w','deaths_prediction_3w','recovered_prediction_3w']
 
     # read the
     resources_capacity_dict = {}
-    with open('../../data/external/beds_capacity_country_codes.csv') as f:
+    with open('../../data/external/country_medical_capacities.csv') as f:
         csv_reader = csv.reader(f, delimiter=',')
         for row in csv_reader:
             resources_capacity_dict[row[0]] = row[1]
+    print(resources_capacity_dict)
 
-    for c in topcountries[:5]:
+    for c in topcountries[:]:
         # run
         print(f'Country: {c}')
         dbltime,dbltimeerr,recentdbltime,params,pred = plotCasesandPredict(dataframe,column,c,days, mostrecentdate)
@@ -219,15 +220,15 @@ def main(days):
             country_code = c
         else:
             country_code = country_code_dict[c]
-        print("==================")
-        print(c, country_code)
-        print("==================")
 
         country_name = c
-        if country_code in resources_capacity_dict:
-            resources_capacity = resources_capacity_dict[country_code]
+        if c in resources_capacity_dict:
+            resources_capacity = float(resources_capacity_dict[c])
         else:
-            resources_capacity = "N/A"
+            resources_capacity = 0
+        print("==================")
+        print(c, country_code, resources_capacity)
+        print("==================")
         confirmed = int(dataframe[dataframe['Country/Region']==c].iloc[:,-1].sum())
         if(not covid_deaths.empty):
             deaths = int(covid_deaths[covid_deaths['Country/Region']==c].iloc[:,-1].sum())
