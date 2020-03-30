@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 from datetime import datetime
 
+import fetch_hopkins
 
 
 def get_country_code():
@@ -18,6 +19,9 @@ def load_data():
     covid_confirmed = pd.read_csv(data_dir+'time_series_covid19_confirmed_global.csv')
     covid_deaths = pd.read_csv(data_dir+'time_series_covid19_deaths_global.csv')
     covid_recovered = pd.read_csv(data_dir+'time_series_covid19_recovered_global.csv')
+
+    #print(fetch_hopkins.fetch_hopkins_from_db())
+
 
     return covid_confirmed, covid_deaths, covid_recovered
 
@@ -201,7 +205,7 @@ def main(days):
         for row in csv_reader:
             resources_capacity_dict[row[0]] = row[1]
 
-    for c in topcountries[:]:
+    for c in topcountries[:5]:
         # run
         print(f'Country: {c}')
         dbltime,dbltimeerr,recentdbltime,params,pred = plotCasesandPredict(dataframe,column,c,days, mostrecentdate)
