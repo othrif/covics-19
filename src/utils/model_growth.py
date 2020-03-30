@@ -158,9 +158,10 @@ def plotCasesandPredict(dataframe, column, country, days, mostrecentdate):
     else:
         return [float('NaN'), float('NaN'), recentdbltime,float('NaN'),float('NaN')]
 
-def main():
+def main(days):
     print(f'Start modeling COVID-19 cases based on latest data!')
 
+    # load data
     covid_confirmed, covid_deaths, covid_recovered = load_data()
 
     cases = covid_confirmed.iloc[:,[1,-1]].groupby('Country/Region').sum()
@@ -171,9 +172,9 @@ def main():
     topcountries = cases.index
 
     countries = ['Italy','US','Switzerland','Iran','United Kingdom','Germany','Spain']
+
     dataframe = covid_confirmed
     column = "Country/Region"
-    days = 21
 
 
     timestamp = datetime.now()
@@ -191,7 +192,7 @@ def main():
         # generate dict values
         country_code = "TEST" # add later
         country_name = c
-        resources_capacity = "TEST" #???
+        resources_capacity = "TEST" # resources
         confirmed = int(dataframe[dataframe['Country/Region']==c].iloc[:,-1].sum())
         deaths = int(covid_deaths[covid_deaths['Country/Region']==c].iloc[:,-1].sum())
         recovered = int(covid_recovered[covid_recovered['Country/Region']==c].iloc[:,-1].sum())
@@ -212,8 +213,11 @@ def main():
 
         # append to master dict
         results['results'].append(results_dict)
-        print(results)
+
+    return results
 
 
 if __name__ == "__main__":
-    main()
+    days = 21 # 3 weeks prediction
+    results = main(days)
+    print(results)
