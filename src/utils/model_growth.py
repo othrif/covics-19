@@ -1,13 +1,17 @@
 import os
-import operator
 import numpy as np
 import pandas as pd
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
-from operator import itemgetter
 from datetime import datetime
 
+def load_data():
+    data_dir = "../../../COVID-19/csse_covid_19_data/"
+    covid_confirmed = pd.read_csv(data_dir+'csse_covid_19_time_series/time_series_covid19_confirmed_global.csv')
+    covid_deaths = pd.read_csv(data_dir+'csse_covid_19_time_series/time_series_covid19_deaths_global.csv')
+    covid_recovered = pd.read_csv(data_dir+'csse_covid_19_time_series/time_series_covid19_recovered_global.csv')
+
+    return covid_confirmed, covid_deaths, covid_recovered
 
 
 def logistic(t, a, b, c, d):
@@ -16,7 +20,7 @@ def logistic(t, a, b, c, d):
 def exponential(t, a, b, c):
     return a * np.exp(b * t) + c
 
-def plotCasesandPredict(dataframe, column, country,days, mostrecentdate):
+def plotCasesandPredict(dataframe, column, country, days, mostrecentdate):
 
     co = dataframe[dataframe[column] == country].iloc[:,4:].T.sum(axis = 1)
     co = pd.DataFrame(co)
@@ -134,7 +138,11 @@ def plotCasesandPredict(dataframe, column, country,days, mostrecentdate):
     plt.xlabel('Days', fontsize="x-large")
     plt.ylabel('Total Confirmed Cases', fontsize="x-large")
     plt.legend(fontsize="x-large")
-    plt.show()
+    #plt.show()
+    plt.yscale('linear')
+    plt.savefig('../../data/figures/'+country+'_linear.png')
+    #plt.yscale('log')
+    #plt.savefig('../../data/figures/'+country+'_log.png')
 
     if logisticworked and exponentialworked:
         if round(logisticr2,2) > round(expr2,2):
@@ -153,15 +161,14 @@ def plotCasesandPredict(dataframe, column, country,days, mostrecentdate):
 def main():
     print(f'Start modeling COVID-19 cases based on latest data!')
 
-    data_dir = "../../../COVID-19/csse_covid_19_data/"
-    covid_confirmed = pd.read_csv(data_dir+'csse_covid_19_time_series/time_series_covid19_confirmed_global.csv')
-    covid_deaths = pd.read_csv(data_dir+'csse_covid_19_time_series/time_series_covid19_deaths_global.csv')
-    covid_recovered = pd.read_csv(data_dir+'csse_covid_19_time_series/time_series_covid19_recovered_global.csv')
+    covid_confirmed, covid_deaths, covid_recovered = load_data()
 
     cases = covid_confirmed.iloc[:,[1,-1]].groupby('Country/Region').sum()
     mostrecentdate = cases.columns[0]
     cases = cases.sort_values(by = mostrecentdate, ascending = False)
     cases = cases[cases[mostrecentdate] >= 100]
+
+    topcountries = cases.index
 
     countries = ['Italy','US','Switzerland','Iran','United Kingdom','Germany','Spain']
     dataframe = covid_confirmed
@@ -174,7 +181,7 @@ def main():
     results = {"results":[],"timestamp":timestamp}
     results_keys = ['country_code','country_name','resources_capacity','confirmed','deaths','recovered','confirmed_prediction_3w','deaths_prediction_3w','recovered_prediction_3w']
 
-    for c in countries:
+    for c in topcountries[:5]:
         # run
         dbltime,dbltimeerr,recentdbltime,params,pred = plotCasesandPredict(dataframe,column,c,days, mostrecentdate)
 
@@ -205,7 +212,7 @@ def main():
 
         # append to master dict
         results['results'].append(results_dict)
-        print results
+        print(results)
 
 
 if __name__ == "__main__":
