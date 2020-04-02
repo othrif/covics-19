@@ -14,7 +14,7 @@ class JSONEncoder(json.JSONEncoder):
 
 def _fetch_hopkins_from_db():
     '''
-    This script fetches latest Hopkins data from our MongoDB and eturns them as list of dictionaries
+    This script fetches latest Hopkins data from our MongoDB and returns them as list of dictionaries
     :return: List of dictionaries containing Hopkins data
     '''
     entries_list = []
@@ -41,6 +41,9 @@ def load_model_data():
     df_recovered = df.loc[df.Status == 'recovered']
 
     # we don't groupby lat and lon ---> hopkins mismatches on lat and lon values are therefore avoided
-    return df_confirmed.reset_index().groupby(['Province', 'Country', 'Date'])['Cases'].aggregate('first').unstack(), \
-           df_deaths.reset_index().groupby(['Province', 'Country', 'Date'])['Cases'].aggregate('first').unstack(), \
-           df_recovered.reset_index().groupby(['Province', 'Country', 'Date'])['Cases'].aggregate('first').unstack()
+    return df_confirmed.reset_index().groupby(['Province', 'Country', 'Date'])['Cases'].\
+               aggregate('first').unstack().reset_index(), \
+           df_deaths.reset_index().groupby(['Province', 'Country', 'Date'])['Cases'].\
+               aggregate('first').unstack().reset_index(), \
+           df_recovered.reset_index().groupby(['Province', 'Country', 'Date'])['Cases'].\
+               aggregate('first').unstack().reset_index()
