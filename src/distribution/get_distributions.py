@@ -122,7 +122,7 @@ def find_optimal_transactions(costs_df_location, requirements_df_location):
     
     requirements_dictionary = {}
     for index, row in requirements.iterrows():
-        requirements_dictionary[row['base_country']] = row['demand']  
+        requirements_dictionary[row['country']] = row['demand']  
 
     # Create the main graph
     nodes = costs['base_country'].unique()
@@ -152,7 +152,7 @@ def find_optimal_transactions(costs_df_location, requirements_df_location):
     return transactions
 
 
-transactions = find_optimal_transactions('country_distances.csv', 'fake_demands.csv')
+transactions = find_optimal_transactions('country_distances.csv', 'demands.csv')
 now = datetime.now()
 distributions = {"timestamp": now, "distributions": transactions}
 result = populate_results.populate_with_distributions(distributions)
