@@ -1,5 +1,3 @@
-
-
 import csv
 import json
 import pickle
@@ -8,9 +6,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 from datetime import datetime
+import sys
 
-import fetch_hopkins
-import populate_results
+sys.path.insert(0, '../')
+from utils import populate_results
+from utils import fetch_hopkins
 
 
 def get_country_code():
@@ -267,13 +267,15 @@ def get_country_code():
                   'West Bank and Gaza':'WG'}
     return countries
 
+# --------------------- DataFrame labels --------------------- #
+COUNTRY_LABEL = 'Country'
+PROVINCE_LABEL = 'Province'
 
 def load_data():
     data_dir = "../../data/external/"
     covid_confirmed = pd.read_csv(data_dir+'time_series_covid19_confirmed_global.csv')
     covid_deaths = pd.read_csv(data_dir+'time_series_covid19_deaths_global.csv')
     covid_recovered = pd.read_csv(data_dir+'time_series_covid19_recovered_global.csv')
-    #print(fetch_hopkins.fetch_hopkins_from_db())
     return covid_confirmed, covid_deaths, covid_recovered
 
 
@@ -287,9 +289,9 @@ def exponential(t, a, b, c):
 
 def plotCasesandPredict(confirmed_cases_df, country, days, current_date):
     # filter down to region rows from the country of interest
-    country_cases = confirmed_cases_df[confirmed_cases_df['Country/Region'] == country]
+    country_cases = confirmed_cases_df[confirmed_cases_df[COUNTRY_LABEL] == country]
     # take only the columns of interest (cases by date)
-    date_columns = country_cases.drop(['Province/State', 'Country/Region', 'Lat', 'Long'], axis = 1)
+    date_columns = country_cases.drop([PROVINCE_LABEL, COUNTRY_LABEL], axis = 1)
     # sum the different regions in the country to create the time series frame
     co = date_columns.T.sum(axis = 1)
     co = pd.DataFrame(co)
@@ -433,14 +435,14 @@ def plotCasesandPredict(confirmed_cases_df, country, days, current_date):
 def main(days):
     # print(f'Start modeling COVID-19 cases based on latest data!')
     # load data
-    covid_confirmed_df, covid_deaths, covid_recovered = load_data()
+    covid_confirmed_df, covid_deaths, covid_recovered = fetch_hopkins.load_model_data()
     country_code_dict = get_country_code()
-    
+
     # get most_recent_date
     dates = covid_confirmed_df.keys()
     current_date = dates[-1]
     # get the most recent cases_confirmed for each country
-    cases = covid_confirmed_df.iloc[:,[1,-1]].groupby('Country/Region').sum().sort_values(by = current_date, ascending = False)
+    cases = covid_confirmed_df.iloc[:,[1,-1]].groupby(COUNTRY_LABEL).sum().sort_values(by = current_date, ascending = False)
     # find highly affected countries
     topcountries = cases[cases[current_date] >= 100].index.tolist()
      
@@ -480,12 +482,12 @@ def main(days):
         confirmed = cases.loc[country][0]
         # get current corona deaths
         if(not covid_deaths.empty):
-            deaths = int(covid_deaths[covid_deaths['Country/Region']==country].iloc[:,-1].sum())
+            deaths = int(covid_deaths[covid_deaths[COUNTRY_LABEL]==country].iloc[:,-1].sum())
         else:
             deaths = 0
         # get current corona recovered
         if(not covid_recovered.empty):
-            recovered = int(covid_recovered[covid_recovered['Country/Region']==country].iloc[:,-1].sum())
+            recovered = int(covid_recovered[covid_recovered[COUNTRY_LABEL]==country].iloc[:,-1].sum())
         else:
             recovered = 0
         # get 3 week predicted cases
