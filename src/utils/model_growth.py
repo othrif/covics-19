@@ -151,7 +151,7 @@ def plotCasesandPredict(dataframe, column, country, days, mostrecentdate):
     plt.xlabel('Days', fontsize="x-large")
     plt.ylabel('Total Confirmed Cases', fontsize="x-large")
     plt.legend(fontsize="x-large")
-    #plt.show()
+    plt.show()
     plt.yscale('linear')
     plt.savefig('../../data/figures/'+country+'_linear.png')
     #plt.yscale('log')
