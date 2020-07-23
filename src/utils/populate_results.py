@@ -53,7 +53,7 @@ def populate_with_predicted_cases(predictions_dict):
 def populate_with_distributions(distributions_dict):
     '''
     This function uploads predictions per country to MongoDB
-    :param predictions_dict: dictionary of predictions per country
+    :param populate_with_distributions: dictionary of predictions per country
     :return: An instance of InsertOneResult.
     '''
     username = urllib.parse.quote_plus("covics-19")
